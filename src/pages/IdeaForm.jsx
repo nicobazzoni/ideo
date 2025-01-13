@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { addDoc, collection, Timestamp } from "firebase/firestore";
-import { auth, db } from "../firebase";
+import { auth, db, storage } from "../firebase";
+import { useState } from "react";
+
 
 const IdeaForm = () => {
   const [ideaName, setIdeaName] = useState("");
@@ -13,14 +15,14 @@ const IdeaForm = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
-
+  
     try {
       if (!ideaName || !content) {
         setError("Idea name and content are required.");
         setLoading(false);
         return;
       }
-
+  
       // Get current user
       const user = auth.currentUser;
       if (!user) {
@@ -28,7 +30,16 @@ const IdeaForm = () => {
         setLoading(false);
         return;
       }
-
+  
+      let attachmentURL = null;
+  
+      // Upload file to Firebase Storage if attachment exists
+      if (attachment) {
+        const storageRef = ref(storage, `attachments/${user.uid}/${attachment.name}`);
+        const snapshot = await uploadBytes(storageRef, attachment);
+        attachmentURL = await getDownloadURL(snapshot.ref);
+      }
+  
       // Prepare data for Firestore
       const ideaData = {
         ideaName,
@@ -39,13 +50,13 @@ const IdeaForm = () => {
         createdAt: Timestamp.now(),
         symbiosis: [],
         likes: [],
-        attachment: attachment ? URL.createObjectURL(attachment) : null, // Use uploaded file
+        attachment: attachmentURL, // Store Firebase Storage URL
       };
-
+  
       // Save to Firestore
       const ideasRef = collection(db, "ideas");
       await addDoc(ideasRef, ideaData);
-
+  
       // Reset form
       setIdeaName("");
       setContent("");

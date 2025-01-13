@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const Feed = () => {
   const [thoughts, setThoughts] = useState([]);
@@ -44,10 +45,16 @@ const Feed = () => {
           transition={{ duration: 0.3 }}
         >
           {/* Thought Bubble */}
-          <div className="relative bg-blue-100 text-gray-800 p-4 rounded-lg shadow-lg max-w-sm text-center">
+          <div className="relative bg-gray-100 opacity-0.5 text-gray-800 p-4 rounded-lg shadow-lg max-w-sm text-center">
             <p className="font-bold text-xs">{thought.userName}</p>
             <p>{thought.content}</p>
-            <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full h-4 w-4 bg-blue-100 rotate-45"></span>
+            <Link
+        to={`/post/${thought.id}`}
+        className="text-blue-500  mt-2 block"
+      >
+      +
+      </Link>
+            <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full h-4 w-4 bg-gray-100 rotate-45"></span>
           </div>
          
 

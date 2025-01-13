@@ -3,7 +3,12 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "./firebase";
 import LoginForm from "./components/LoginForm";
 import HomePage from "./pages/HomePage";
-import IdeaForm from "./pages/IdeaForm"; // Import your IdeaForm component
+import IdeaForm from "./pages/IdeaForm";
+import PostPage from "./pages/PostPage"; // Import PostPage for dynamic routing
+
+const ProtectedRoute = ({ user, children }) => {
+  return user ? children : <LoginForm />;
+};
 
 const App = () => {
   const [user, loading, error] = useAuthState(auth);
@@ -13,14 +18,33 @@ const App = () => {
 
   return (
     <Router>
-      {user ? (
-        <Routes>
-          <Route path="/" element={<HomePage user={user} />} />
-          <Route path="/post" element={<IdeaForm />} />
-        </Routes>
-      ) : (
-        <LoginForm />
-      )}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute user={user}>
+              <HomePage user={user} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/post"
+          element={
+            <ProtectedRoute user={user}>
+              <IdeaForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/post/:id"
+          element={
+            <ProtectedRoute user={user}>
+              <PostPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<div>Page Not Found</div>} />
+      </Routes>
     </Router>
   );
 };

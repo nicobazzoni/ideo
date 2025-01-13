@@ -34,7 +34,7 @@ const HomePage = () => {
   if (!userData) return <div>Loading...</div>;
 
   return (
-    <div className="bg-gradient-to-b from-blue-50 to-white min-h-screen flex flex-col items-center justify-center">
+    <div className="bg-gradient-to-b m-4 from-blue-50 to-white min-h-screen flex flex-col items-center justify-center">
       {/* Hero Section */}
       <div className="text-center space-y-6">
         <div className="relative w-32 h-32 md:w-48 md:h-48 rounded-full border-4 border-blue-300 overflow-hidden shadow-lg mx-auto">
@@ -63,9 +63,7 @@ const HomePage = () => {
         <Link to="/post" className="button">
           Post a Thought
         </Link>
-        <p className="text-gray-500 text-sm">
-          Your thoughts will appear on your profile and shared with others.
-        </p>
+       
       </div>
 
       {/* Feed Section */}
