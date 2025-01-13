@@ -1,0 +1,115 @@
+import React, { useState } from "react";
+import { addDoc, collection, Timestamp } from "firebase/firestore";
+import { auth, db } from "../firebase";
+
+const IdeaForm = () => {
+  const [ideaName, setIdeaName] = useState("");
+  const [content, setContent] = useState("");
+  const [attachment, setAttachment] = useState(null); // File upload
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      if (!ideaName || !content) {
+        setError("Idea name and content are required.");
+        setLoading(false);
+        return;
+      }
+
+      // Get current user
+      const user = auth.currentUser;
+      if (!user) {
+        setError("You must be logged in to submit an idea.");
+        setLoading(false);
+        return;
+      }
+
+      // Prepare data for Firestore
+      const ideaData = {
+        ideaName,
+        content,
+        userPhoto: user.photoURL || "/default-avatar.png",
+        userName: user.displayName || "Anonymous",
+        userId: user.uid,
+        createdAt: Timestamp.now(),
+        symbiosis: [],
+        likes: [],
+        attachment: attachment ? URL.createObjectURL(attachment) : null, // Use uploaded file
+      };
+
+      // Save to Firestore
+      const ideasRef = collection(db, "ideas");
+      await addDoc(ideasRef, ideaData);
+
+      // Reset form
+      setIdeaName("");
+      setContent("");
+      setAttachment(null);
+      setError("");
+    } catch (err) {
+      console.error("Error submitting idea:", err);
+      setError("Failed to submit your idea. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleFormSubmit} className="max-w-md mx-auto p-6 bg-white shadow rounded">
+      <h2 className="text-xl font-bold mb-4">Share Your Idea</h2>
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+
+      {/* Idea Name */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Idea Name</label>
+        <input
+          type="text"
+          value={ideaName}
+          onChange={(e) => setIdeaName(e.target.value)}
+          className="w-full p-2 border rounded focus:outline-none focus:ring focus:ring-blue-300"
+          placeholder="Enter the title of your idea"
+        />
+      </div>
+
+      {/* Content */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Content</label>
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          className="w-full p-2 border rounded focus:outline-none focus:ring focus:ring-blue-300"
+          placeholder="Describe your idea in detail"
+          rows="4"
+        ></textarea>
+      </div>
+
+      {/* Attachment */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Attachment (Optional)</label>
+        <input
+          type="file"
+          onChange={(e) => setAttachment(e.target.files[0])}
+          className="w-full p-2 border rounded focus:outline-none"
+        />
+      </div>
+
+      {/* Submit Button */}
+      <button
+        type="submit"
+        className={`w-full p-2 rounded text-white ${
+          loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+        }`}
+        disabled={loading}
+      >
+        {loading ? "Submitting..." : "Submit Idea"}
+      </button>
+    </form>
+  );
+};
+
+export default IdeaForm;
