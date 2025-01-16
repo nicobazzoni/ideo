@@ -2,6 +2,8 @@ import { useState } from "react";
 import { signInWithPopup } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, googleProvider, db } from "../firebase";
+import { toast } from "react-toastify"; // ✅ Import toast
+import "react-toastify/dist/ReactToastify.css";
 
 const LoginForm = () => {
   const [error, setError] = useState("");
@@ -26,7 +28,10 @@ const LoginForm = () => {
         },
         { merge: true } // Avoid overwriting existing data
       );
-
+      toast.success(`👋 Welcome back, ${user.displayName || "Guest"}!`, {
+        position: "top-right",
+        autoClose: 3000,
+      });
       console.log("User signed in and saved to Firestore:", user);
     } catch (err) {
       console.error("Error during Google Sign-In:", err);

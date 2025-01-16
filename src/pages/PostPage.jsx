@@ -4,11 +4,14 @@ import { db } from "../firebase";
 import { getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../firebase";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 
 const PostPage = () => {
   const { id } = useParams();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -42,22 +45,41 @@ const PostPage = () => {
 
   if (!post) return <div>Post not found</div>;
 
-  return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-bold">{post.title}</h1>
+return (
+  <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-2xl text-center">
+      {/* User Image */}
+      <img className="rounded-full mx-auto w-20 h-20" src={post.userPhoto} alt="User" />
+      
+      {/* Title */}
+      <h1 className="text-2xl font-bold mt-4">{post.ideaName}</h1>
+
+      {/* Image Attachment */}
       <img
-        src={post.attachment || '/PLANE2.png'  }
+        src={post.attachment || '/PLANE2.png'}
         alt={post.title || "Post Image"}
-        className="w-full h-auto rounded my-4 "
+        className="w-full h-76 rounded my-4 object-cover"
         onError={(e) => (e.target.src = "/PLANE2.png")}
       />
+
+      {/* Post Content */}
       <p className="text-gray-700">{post.content}</p>
+
+      {/* Post Metadata */}
       <p className="text-sm text-gray-500 mt-4">
-        Posted by {post.userName || "Anonymous"} on{" "}
+        Posted by <span className="font-bold "> {post.userName || "Anonymous"} on{" "}</span>
         {new Date(post.createdAt?.seconds * 1000).toLocaleDateString()}
       </p>
+
+      {/* Back Button */}
+      <div className="flex justify-center mt-4">
+        <button className="bg-gray-200 px-4 py-2 rounded-md hover:bg-gray-300" onClick={() => navigate("/")}>
+          Go Back Home
+        </button>
+      </div>
     </div>
-  );
-};
+  </div>
+);
+}
 
 export default PostPage;

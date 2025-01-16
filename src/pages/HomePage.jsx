@@ -35,6 +35,7 @@ const HomePage = () => {
 
   return (
     <div className="bg-gradient-to-b m-4 from-blue-50 to-white min-h-screen flex flex-col items-center justify-center">
+        <h1 className=" tracking-widest m-2 font-thin">i d e o</h1>
       {/* Hero Section */}
       <div className="text-center space-y-6">
         <div className="relative w-32 h-32 md:w-48 md:h-48 rounded-full border-4 border-blue-300 overflow-hidden shadow-lg mx-auto">
@@ -48,8 +49,9 @@ const HomePage = () => {
           Welcome, {userData.displayName}!
         </h1>
         <p className="text-gray-600 text-lg">
-          A place to share your thoughts and connect with others.
+          <span className="font-bold tracking-widest">i d e o </span>is a place to share your thoughts and connect with others.
         </p>
+      
       </div>
       <button
           onClick={handleLogout}

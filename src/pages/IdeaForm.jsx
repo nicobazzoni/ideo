@@ -2,44 +2,49 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { addDoc, collection, Timestamp } from "firebase/firestore";
 import { auth, db, storage } from "../firebase";
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify"; // ✅ Import toast
+import "react-toastify/dist/ReactToastify.css"; // ✅ Import CSS for toastify
 
 const IdeaForm = () => {
   const [ideaName, setIdeaName] = useState("");
   const [content, setContent] = useState("");
-  const [attachment, setAttachment] = useState(null); // File upload
+  const [attachment, setAttachment] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-  
+
     try {
       if (!ideaName || !content) {
         setError("Idea name and content are required.");
+        toast.error("⚠️ Idea name and content are required!", { transition: toast.TYPE.FLIP });
         setLoading(false);
         return;
       }
-  
+
       // Get current user
       const user = auth.currentUser;
       if (!user) {
         setError("You must be logged in to submit an idea.");
+        toast.error("🚨 You must be logged in to submit an idea.", { transition: toast.TYPE.BOUNCE });
         setLoading(false);
         return;
       }
-  
+
       let attachmentURL = null;
-  
+
       // Upload file to Firebase Storage if attachment exists
       if (attachment) {
         const storageRef = ref(storage, `attachments/${user.uid}/${attachment.name}`);
         const snapshot = await uploadBytes(storageRef, attachment);
         attachmentURL = await getDownloadURL(snapshot.ref);
       }
-  
+
       // Prepare data for Firestore
       const ideaData = {
         ideaName,
@@ -52,19 +57,32 @@ const IdeaForm = () => {
         likes: [],
         attachment: attachmentURL, // Store Firebase Storage URL
       };
-  
+
       // Save to Firestore
       const ideasRef = collection(db, "ideas");
       await addDoc(ideasRef, ideaData);
-  
+
+      // Success message
+      toast.success("✅ Your idea was posted successfully!", {
+      
+        autoClose: 3000,
+        style: { background: "#28a745", color: "#fff", fontWeight: "bold", borderRadius: "8px" },
+      });
+
       // Reset form
       setIdeaName("");
       setContent("");
       setAttachment(null);
       setError("");
+
+      // Redirect to home page
+      navigate("/");
     } catch (err) {
       console.error("Error submitting idea:", err);
       setError("Failed to submit your idea. Please try again.");
+      toast.error("🚨 Failed to submit your idea. Please try again.", {
+       
+      });
     } finally {
       setLoading(false);
     }

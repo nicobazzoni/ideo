@@ -5,7 +5,8 @@ import LoginForm from "./components/LoginForm";
 import HomePage from "./pages/HomePage";
 import IdeaForm from "./pages/IdeaForm";
 import PostPage from "./pages/PostPage"; // Import PostPage for dynamic routing
-
+import { ToastContainer } from "react-toastify"; // ✅ Import ToastContainer
+import "react-toastify/dist/ReactToastify.css";
 const ProtectedRoute = ({ user, children }) => {
   return user ? children : <LoginForm />;
 };
@@ -18,6 +19,7 @@ const App = () => {
 
   return (
     <Router>
+       <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
         <Route
           path="/"
