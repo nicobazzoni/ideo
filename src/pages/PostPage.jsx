@@ -1,18 +1,22 @@
 import { useParams } from "react-router-dom";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc,deleteDoc } from "firebase/firestore";
 import { db } from "../firebase";
-import { getDownloadURL, ref } from "firebase/storage";
-import { storage } from "../firebase";
+import { getDownloadURL, ref,deleteObject } from "firebase/storage";
+import { storage,auth } from "../firebase";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+import LikeButton from "../components/LikeButton";
 
 const PostPage = () => {
   const { id } = useParams();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate()
-
+  const [isOwner, setIsOwner] = useState(false)
+  const user = auth.currentUser; 
+  console.log(user)
+  
+  
   useEffect(() => {
     const fetchPost = async () => {
       try {
@@ -28,6 +32,9 @@ const PostPage = () => {
           }
 
           setPost(data);
+
+          // ✅ Check if the logged-in user is the post owner
+          setIsOwner(user && data.userId === user.uid);
         } else {
           console.log("No such post!");
         }
@@ -39,7 +46,30 @@ const PostPage = () => {
     };
 
     fetchPost();
-  }, [id]);
+  }, [id, user]);
+
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this post?")) return;
+
+    try {
+      const postRef = doc(db, "ideas", id);
+
+      // ✅ Delete attachment from Firebase Storage (if exists)
+      if (post.attachmentPath) {
+        const attachmentRef = ref(storage, post.attachmentPath);
+        await deleteObject(attachmentRef);
+      }
+
+      // ✅ Delete post from Firestore
+      await deleteDoc(postRef);
+
+      alert("Post deleted successfully.");
+      navigate("/"); // Redirect to home after deletion
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
+  };
+
 
   if (loading) return <div>Loading post...</div>;
 
@@ -70,6 +100,15 @@ return (
         Posted by <span className="font-bold "> {post.userName || "Anonymous"} on{" "}</span>
         {new Date(post.createdAt?.seconds * 1000).toLocaleDateString()}
       </p>
+      <LikeButton postId={id} />
+      {isOwner && (
+        <button
+          onClick={handleDelete}
+          className="bg-red-500 text-white px-4 py-2 rounded-md mt-4 hover:bg-red-600"
+        >
+          Delete Post
+        </button>
+      )}
 
       {/* Back Button */}
       <div className="flex justify-center mt-4">

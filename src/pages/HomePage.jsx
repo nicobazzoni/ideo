@@ -62,7 +62,7 @@ const HomePage = () => {
 
       {/* Call-to-Action Section */}
       <div className="mt-12 flex flex-col items-center space-y-4">
-        <Link to="/post" className="button">
+        <Link to="/post" className="bg-blue-200 rounded-md p-2 m-1">
           Post a Thought
         </Link>
        
