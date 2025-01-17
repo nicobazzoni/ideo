@@ -2,7 +2,7 @@ import { useState } from "react";
 import { signInWithPopup } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, googleProvider, db } from "../firebase";
-import { toast } from "react-toastify"; // ✅ Import toast
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const LoginForm = () => {
@@ -26,8 +26,9 @@ const LoginForm = () => {
           email: user.email,
           lastLogin: new Date(),
         },
-        { merge: true } // Avoid overwriting existing data
+        { merge: true }
       );
+
       toast.success(`👋 Welcome back, ${user.displayName || "Guest"}!`, {
         position: "top-right",
         autoClose: 3000,
@@ -42,18 +43,23 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="max-w-sm mx-auto mt-10 p-6 bg-white shadow rounded">
-      <h1 className="text-xl font-bold mb-4">Sign In</h1>
-      {error && <p className="text-red-500">{error}</p>}
-      <button
-        onClick={handleGoogleSignIn}
-        className={`w-full p-2 rounded text-white ${
-          loading ? "bg-gray-400 cursor-not-allowed" : "bg-red-500 hover:bg-red-600"
-        }`}
-        disabled={loading}
-      >
-        {loading ? "Signing In..." : "Sign In with Google"}
-      </button>
+    <div
+      className="min-h-screen flex items-center justify-center bg-cover bg-center"
+      style={{ backgroundImage: "url('/ideo.png')" }} // ✅ Set Background
+    >
+      <div className="max-w-sm w-full bg-white p-6 rounded-lg shadow-md bg-opacity-90">
+        <h1 className="text-xl font-bold mb-4 text-center">Welcome to Ideo</h1>
+        {error && <p className="text-red-500 text-center">{error}</p>}
+        <button
+          onClick={handleGoogleSignIn}
+          className={`w-full p-2 rounded text-white ${
+            loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-400 hover:bg-green-400"
+          }`}
+          disabled={loading}
+        >
+          {loading ? "Signing In..." : "Sign In with Google"}
+        </button>
+      </div>
     </div>
   );
 };
