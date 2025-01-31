@@ -76,7 +76,7 @@ const HomePage = () => {
       {/* Footer Section */}
       <div className="mt-auto w-full text-center py-6 bg-gray-100">
         <p className="text-gray-500">
-          Powered by <span className="font-semibold text-blue-500">Your App</span>.
+          Powered by <span className="font-semibold text-blue-500">Ideo</span>.
         </p>
       </div>
     </div>

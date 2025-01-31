@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { doc, updateDoc, getDoc, arrayUnion, arrayRemove } from "firebase/firestore";
-import { auth, db } from "../firebase";
-import { FaThumbsUp } from "react-icons/fa";
+import { useState, useEffect } from 'react';
+import { doc, updateDoc, getDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { auth, db } from '../firebase';
+import { FaThumbsUp } from 'react-icons/fa';
 
 const LikeButton = ({ postId }) => {
   const [likes, setLikes] = useState([]);
@@ -12,7 +12,7 @@ const LikeButton = ({ postId }) => {
     const fetchLikes = async () => {
       if (!postId) return;
 
-      const postRef = doc(db, "ideas", postId);
+      const postRef = doc(db, 'ideas', postId);
       const postSnap = await getDoc(postRef);
 
       if (postSnap.exists()) {
@@ -27,15 +27,15 @@ const LikeButton = ({ postId }) => {
 
   const handleLike = async () => {
     if (!user) {
-      alert("You must be logged in to like a post!");
+      alert('You must be logged in to like a post!');
       return;
     }
 
-    const postRef = doc(db, "ideas", postId);
+    const postRef = doc(db, 'ideas', postId);
     const userLikeData = {
       userId: user.uid,
-      userName: user.displayName || "Anonymous",
-      userPhoto: user.photoURL || "/default-avatar.png",
+      userName: user.displayName || 'Anonymous',
+      userPhoto: user.photoURL || '/default-avatar.png',
     };
 
     const updatedLikes = liked
@@ -49,16 +49,16 @@ const LikeButton = ({ postId }) => {
         liked ? prev.filter((like) => like.userId !== user.uid) : [...prev, userLikeData]
       );
     } catch (error) {
-      console.error("Error updating likes:", error);
+      console.error('Error updating likes:', error);
     }
   };
 
   return (
-    <div className="mt-2">
+    <div className='mt-2'>
       <button
         onClick={handleLike}
         className={`flex items-center space-x-2 p-2 rounded-md ${
-          liked ? "text-blue-500" : "text-gray-500 hover:text-blue-400"
+          liked ? 'text-blue-500' : 'text-gray-500 hover:text-blue-400'
         }`}
       >
         <FaThumbsUp size={20} />
@@ -67,17 +67,19 @@ const LikeButton = ({ postId }) => {
 
       {/* Show user avatars of those who liked */}
       {likes.length > 0 && (
-        <div className="mt-2 flex -space-x-2">
+        <div className='mt-2 flex -space-x-2'>
           {likes.slice(0, 5).map((like, index) => (
             <img
               key={index}
               src={like.userPhoto}
               alt={like.userName}
-              className="w-8 h-8 rounded-full border border-white shadow"
+              className='w-8 h-8 rounded-full border border-white shadow'
               title={like.userName}
             />
           ))}
-          {likes.length > 5 && <span className="ml-2 text-sm text-gray-500">+{likes.length - 5} more</span>}
+          {likes.length > 5 && (
+            <span className='ml-2 text-sm text-gray-500'>+{likes.length - 5} more</span>
+          )}
         </div>
       )}
     </div>
